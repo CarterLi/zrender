@@ -1846,7 +1846,7 @@ function isCanvasEl(el) {
  * Utilities for mouse or touch events.
  */
 
-var isDomLevel2 = (typeof window !== 'undefined') && !!window.addEventListener;
+var isDomLevel2 = typeof addEventListener === 'function';
 
 var MOUSE_EVENT_REG = /^(?:mouse|pointer|contextmenu|drag|drop)|click/;
 var _calcOut = [];
@@ -7733,13 +7733,13 @@ Layer.prototype = {
 };
 
 var requestAnimationFrame = (
-    typeof window !== 'undefined'
+    typeof self !== 'undefined'
     && (
-        (window.requestAnimationFrame && window.requestAnimationFrame.bind(window))
         // https://github.com/ecomfe/zrender/issues/189#issuecomment-224919809
-        || (window.msRequestAnimationFrame && window.msRequestAnimationFrame.bind(window))
-        || window.mozRequestAnimationFrame
-        || window.webkitRequestAnimationFrame
+        (self.msRequestAnimationFrame && self.msRequestAnimationFrame.bind(window))
+        || self.requestAnimationFrame
+        || self.mozRequestAnimationFrame
+        || self.webkitRequestAnimationFrame
     )
 ) || function (func) {
     setTimeout(func, 16);
@@ -11648,8 +11648,8 @@ var ZRender = function (id, dom, opts) {
     this.storage = storage;
     this.painter = painter;
 
-    var handerProxy = (!env$1.node && !env$1.worker) ? new HandlerDomProxy(painter.getViewportRoot(), painter.root) : null;
-    this.handler = new Handler(storage, painter, handerProxy, painter.root);
+    var handlerProxy = !env$1.node ? new HandlerDomProxy(painter.getViewportRoot(), painter.root) : null;
+    this.handler = new Handler(storage, painter, handlerProxy, painter.root);
 
     /**
      * @type {module:zrender/animation/Animation}
